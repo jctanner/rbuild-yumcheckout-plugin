@@ -1,0 +1,12 @@
+\#Oracle-Server-meta
+class $className(CapsuleRecipe):
+    name = '$name'
+    version = '$version'
+
+    buildRequires = []
+
+    def setup(r):
+        r.addCapsule('$x64url', use=Arch.x86_64)
+        r.addCapsule('$x86url', use=Arch.x86)
+
+        r.RPMRequires(exceptDeps='file: /usr/lib/libc.so')

@@ -1,0 +1,11 @@
+\#capsulerecipe-64-only.txt
+class $className(CapsuleRecipe):
+    name = '$name'
+    version = '$version'
+
+    buildRequires = []
+
+    def setup(r):
+        r.addCapsule('$x64url', use=Arch.x86_64)
+
+        r.SharedLibrary(subtrees='/usr/local/cmom/lib')

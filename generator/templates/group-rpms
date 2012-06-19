@@ -1,0 +1,34 @@
+\#group-rpms recipe template
+class GroupRpms(GroupSetRecipe):
+
+    \# $repourl
+
+    name = 'group-rpms'
+    version = '$version'
+
+    buildRequires = []
+
+    def setup(r):
+        Use.xen.setPlatform(False)
+        Use.domU.setPlatform(False)
+        Use.dom0.setPlatform(False)
+        Use.vmware.setPlatform(False)
+
+        r.dumpAll()
+
+        localrepo = r.Repository(r.cfg.buildLabel, r.flavor)
+        upstream = r.Repository('rhel.rpath.com@rpath:rhel-5-server', r.flavor)
+        searchObj = r.SearchPath(localrepo, upstream)
+
+        packages = r.yumPackages()
+
+        pkgtrvset = searchObj.find(*packages)
+        pkgtrvset.dump()
+
+        r.Group(pkgtrvset, checkPathConflicts=False)
+
+    def yumPackages(r):
+        packages = [$packages
+        ]
+        return packages
+

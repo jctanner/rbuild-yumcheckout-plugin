@@ -1,0 +1,29 @@
+#GOALS
+* scan an input yumrepo url (2012-05-02 done)
+* determine which rpms are upstream and which are not
+* generate a recipe for each non-upstream package with genshi
+* launch an rbuild job for each package
+
+
+#MODULES
+* genshi -- templating engine for generator
+* generator -- rpm to conary recipe creation
+* repomd -- yum metadata parsing and abstraction
+
+
+#TEMPLATES
+
+The recipe templates live in generator/templates.
+
+    capsulerecipe.txt
+
+        Default template which requires an x86 and an x64 package url
+
+    capsulerecipe-64-only.txt
+
+        Default template that only requires an x64 package url
+
+
+# usage example
+rbuild yumcheckout $URL
+rbuild build packages
