@@ -13,7 +13,9 @@ from rbuild import pluginapi
 from rbuild.pluginapi import command
 
 from rbuild_plugins.yumcheckout.repomd import yumrepo
+from rbuild_plugins.yumcheckout.repomd import yumrepos
 from rbuild_plugins.yumcheckout.generator import parserepo
+from rbuild_plugins.yumcheckout.generator import parserepos
 from rbuild_plugins.yumcheckout.generator import grouprecipes
 from rbuild_plugins.yumcheckout.conaryhelpers import labelquery
 
@@ -24,12 +26,13 @@ class YumCheckoutCommand(command.BaseCommand):
     #epdb.st()
 
     help = "Parse a yumrepo and create package/group recipes"
-    paramHelp = '[<options>] <yumrepourl>'
+    paramHelp = '[<options>] --yumurl=<yumrepourl>'
 
     commands = ['yumcheckout']
     docs = {'factory' : "choose the default factory for recipes"}
 
     def addLocalParameters(self, argDef):
+        argDef['yumurl'] = command.MULT_PARAM
         argDef['factory'] = command.OPT_PARAM
         argDef['templatedir'] = command.OPT_PARAM
         argDef['upstreamlabel'] = command.OPT_PARAM
@@ -39,17 +42,36 @@ class YumCheckoutCommand(command.BaseCommand):
 
     def runCommand(self, handle, argSet, args):
         print "runCommand ..."
-        yumRepoUrl, = self.requireParameters(args, ['yumRepoUrl'])[1:]
+        #epdb.st()
+        #yumRepoUrl, = self.requireParameters(args, ['yumRepoUrl'])[1:]
         factory = argSet.pop('factory', None)
         #print "runCommand ..."
-        self.runYumCheckoutCommand(handle, argSet, args, yumRepoUrl, factory=None)
+        #self.runYumCheckoutCommand(handle, argSet, args, yumRepoUrl, factory=None)
+        self.runYumCheckoutCommand(handle, argSet, args, factory=None)
 
-    def runYumCheckoutCommand(self, handle, argSet, args, yumRepoUrl, factory=None):
-        print "runYumCheckoutCommand ... %s" % yumRepoUrl
+    def runYumCheckoutCommand(self, handle, argSet, args, factory=None):
+        #print "runYumCheckoutCommand ... %s" % yumRepoUrl
+        print "runYumCheckoutCommand ... " 
         #epdb.st()
-        yumrepoObj = yumrepo.yumRepo(yumRepoUrl)
+        yumreposObj = yumrepos.yumRepos()
+        for yumRepoUrl in argSet['yumurl']:
+            print yumRepoUrl
+            #epdb.st()
+            yumreposObj.createRepo(yumRepoUrl)
+
         #epdb.st()
-        yumrepoObj.findLatestPackages()
+        yumreposObj.latestPackages()
+        #epdb.st()
+        yumreposObj.sortPackages()
+        #epdb.st()
+        yumreposObj.uniqueGroups()
+        #epdb.st()
+
+        #epdb.st()
+        #yumrepoObj = yumrepo.yumRepo(yumRepoUrl)
+
+        #epdb.st()
+        #yumrepoObj.findLatestPackages()
 
         #productStore = self.handle.productStore
         #currentLabel = productStore.getActiveStageLabel()
@@ -60,7 +82,8 @@ class YumCheckoutCommand(command.BaseCommand):
         #yumrepoObj = labelquery.findYumPackagesInLabel(yumrepoObj, 
         #    'rhel.rpath.com@rpath:rhel-5-server', 
         #    'repoimporttests.eng.rpath.com@r:repoimporttests-trunk-devel')
-        yumrepoObj = labelquery.findYumPackagesInLabel(yumrepoObj, 
+        #epdb.st()
+        yumreposObj = labelquery.findYumPackagesInLabel(yumreposObj, 
                                             upstreamLabel, localLabel)
 
 
@@ -68,7 +91,7 @@ class YumCheckoutCommand(command.BaseCommand):
 
         #if (argSet['packages']):
         if (argSet.get('packages', False)):
-            outputrecipes = parserepo.processYumRepoKindred(yumrepoObj)
+            outputrecipes = parserepos.processYumReposKindred(yumreposObj)
 
             for key in sorted(outputrecipes.keys()):
                 print "INFO: checking out package %s" % key
@@ -77,7 +100,7 @@ class YumCheckoutCommand(command.BaseCommand):
 
         #if (argSet['groups']):
         if (argSet.get('groups', False)):
-            outputrecipes = grouprecipes.GroupRecipes(yumrepoObj)
+            outputrecipes = grouprecipes.GroupRecipes(yumreposObj)
             #epdb.st()
             for key in sorted(outputrecipes.recipes.keys()):
                 print "INFO: checking out %s" % key

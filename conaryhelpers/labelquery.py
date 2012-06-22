@@ -7,7 +7,7 @@ from conary.versions import Label
 import itertools
 
 #def checkLabelsAPI(self, locallabel, upstreamlabel):
-def findYumPackagesInLabel(yumrepo, upstreamlabel, downstreamlabel):
+def findYumPackagesInLabel(yumrepos, upstreamlabel, downstreamlabel):
 
     # given a yumrepo object, check if the packages exist upstream or downstream
 
@@ -24,7 +24,7 @@ def findYumPackagesInLabel(yumrepo, upstreamlabel, downstreamlabel):
         # trvSpec[2] = Flavor('is: x86_64')
 
 
-        for pkg in yumrepo.latestpackages:
+        for pkg in yumrepos.latestpackages:
             trovespec = ""
             #print "\t%s" % pkg.name
 
@@ -52,7 +52,7 @@ def findYumPackagesInLabel(yumrepo, upstreamlabel, downstreamlabel):
         # trvSpec[2] = Flavor('is: x86_64')
 
         #epdb.st()
-        for pkg in yumrepo.latestpackages:
+        for pkg in yumrepos.latestpackages:
             trovespec = ""
             #print "\t%s" % pkg.name
 
@@ -70,7 +70,7 @@ def findYumPackagesInLabel(yumrepo, upstreamlabel, downstreamlabel):
                print "MATCH: %s %s" %(pkg.url, trovespec)
                #epdb.st()
     #import epdb; epdb.st()
-    return yumrepo
+    return yumrepos
 
 def _getNevras(NEVRA, label):
     cfg = conarycfg.ConaryConfiguration(True)
