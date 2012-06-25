@@ -1,7 +1,7 @@
 \#group-rpms recipe template
 class GroupRpms(GroupSetRecipe):
 
-    \# $repourl
+    \# $repourls
 
     name = 'group-rpms'
     version = '$version'

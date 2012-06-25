@@ -11,15 +11,15 @@ import datetime
 class GroupRecipes(object):
 
     #def __init__(self, packagename, version, x86url, x64url):
-    def __init__(self, yumrepoObj):
+    def __init__(self, yumreposObj):
         self.yumrepos = yumreposObj
         self.recipes = {}
         self.loader = TemplateLoader(
             os.path.join(os.path.dirname(__file__), 
-            'templates'), auto_reload=True
-        )    
+            'templates'), auto_reload=True)    
        
-        self.recipes['group-rpms'] = self.generateGroupRpmsRecipe() 
+        self.recipes['group-rpms'] = self.generateGroupRpmsRecipe()
+        self.recipes['group-rpms'] = self.generateGroupYumReposRecipe() 
         #import epdb; epdb.st()
         #return self.recipes
 
@@ -41,28 +41,44 @@ class GroupRecipes(object):
             elif (pkg.localtrove != ''):
                 pkglist += "\t\t\'%s\',\n" % pkg.localtrove
 
+        # aggregate all the urls together for recipe comments
+        repourls = []
+        for repo in self.yumrepos.repos:
+            repourls.append(repo.url)
 
 
         templ = self.loader.load('group-rpms', cls=TextTemplate)
+        import epdb; epdb.st()
+        '''
         recipe = templ.generate(className=classname,
-                                repourl = self.yumrepo.url,
+                                repourl = self.yumrepos.url,
                                 name = name,
                                 version = datestamp,
                                 packages = pkglist)
+        '''
+        recipe = templ.generate(className=classname,
+                                repourl = repourls,
+                                name = name,
+                                version = datestamp,
+                                packages = pkglist)        
         return recipe.render('text')
 
 
-	def generateGroupYumReposRecipe(self):
-		
-		name = 'group-yumrepos'
-		classname = stringfunctions.rpmToClassName(name)
-		now = datetime.datetime.now()
-		datestamp = now.strftime("%Y_%m_%d_%H_%M_%S")
-		
-		templ = self.loader.load('group-yumrepos', cls=TextTemplate)
-		recipe = templ.generate(name = name, 
-								className=classname, 
-								version = datestamp,
-								groups = grouplist,
-								packages = pkglist)
-		return recipe.render('text')						
+    def generateGroupYumReposRecipe(self):
+        
+        name = 'group-yumrepos'
+        classname = stringfunctions.rpmToClassName(name)
+        now = datetime.datetime.now()
+        datestamp = now.strftime("%Y_%m_%d_%H_%M_%S")
+        
+        repourls = []
+        for repo in self.yumrepos.repos:
+            repourls.append(repo.url)        
+        
+        templ = self.loader.load('group-yumrepos', cls=TextTemplate)
+        recipe = templ.generate(name = name, 
+                                className=classname, 
+                                version = datestamp,
+                                groups = grouplist,
+                                packages = pkglist)
+        return recipe.render('text')                        
