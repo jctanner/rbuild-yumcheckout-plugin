@@ -12,7 +12,7 @@ class GroupRecipes(object):
 
     #def __init__(self, packagename, version, x86url, x64url):
     def __init__(self, yumrepoObj):
-        self.yumrepo = yumrepoObj
+        self.yumrepos = yumreposObj
         self.recipes = {}
         self.loader = TemplateLoader(
             os.path.join(os.path.dirname(__file__), 
@@ -34,7 +34,7 @@ class GroupRecipes(object):
         #datestamp = "NOW"
         pkglist = ""
 
-        for pkg in sorted(self.yumrepo.latestpackages):
+        for pkg in sorted(self.yumrepos.latestpackages):
             #prefer upstream
             if (pkg.upstreamtrove != ''):
                 pkglist += "\t\t\'%s\',\n" % pkg.upstreamtrove
@@ -50,3 +50,19 @@ class GroupRecipes(object):
                                 version = datestamp,
                                 packages = pkglist)
         return recipe.render('text')
+
+
+	def generateGroupYumReposRecipe(self):
+		
+		name = 'group-yumrepos'
+		classname = stringfunctions.rpmToClassName(name)
+		now = datetime.datetime.now()
+		datestamp = now.strftime("%Y_%m_%d_%H_%M_%S")
+		
+		templ = self.loader.load('group-yumrepos', cls=TextTemplate)
+		recipe = templ.generate(name = name, 
+								className=classname, 
+								version = datestamp,
+								groups = grouplist,
+								packages = pkglist)
+		return recipe.render('text')						
