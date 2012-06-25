@@ -1,9 +1,10 @@
 \#group-rpms recipe template
 class GroupRpms(GroupSetRecipe):
 
-    \# $repourls
+    \#parsed repo urls
+$repourls
 
-    name = 'group-rpms'
+    name = 'group-yumrepos'
     version = '$version'
 
     buildRequires = []

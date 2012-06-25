@@ -19,7 +19,7 @@ class GroupRecipes(object):
             'templates'), auto_reload=True)    
        
         self.recipes['group-rpms'] = self.generateGroupRpmsRecipe()
-        self.recipes['group-rpms'] = self.generateGroupYumReposRecipe() 
+        self.recipes['group-yumrepos'] = self.generateGroupYumReposRecipe() 
         #import epdb; epdb.st()
         #return self.recipes
 
@@ -44,11 +44,11 @@ class GroupRecipes(object):
         # aggregate all the urls together for recipe comments
         repourls = []
         for repo in self.yumrepos.repos:
-            repourls.append(repo.url)
+            repourls.append('    ' + '#' + repo.url + '\n')
 
 
         templ = self.loader.load('group-rpms', cls=TextTemplate)
-        import epdb; epdb.st()
+        #import epdb; epdb.st()
         '''
         recipe = templ.generate(className=classname,
                                 repourl = self.yumrepos.url,
@@ -57,7 +57,7 @@ class GroupRecipes(object):
                                 packages = pkglist)
         '''
         recipe = templ.generate(className=classname,
-                                repourl = repourls,
+                                repourls = repourls,
                                 name = name,
                                 version = datestamp,
                                 packages = pkglist)        
@@ -73,11 +73,15 @@ class GroupRecipes(object):
         
         repourls = []
         for repo in self.yumrepos.repos:
-            repourls.append(repo.url)        
+            repourls.append('    ' + '#' + repo.url + '\n')        
+        
+        pkglist = []
+        grouplist = []
         
         templ = self.loader.load('group-yumrepos', cls=TextTemplate)
         recipe = templ.generate(name = name, 
                                 className=classname, 
+                                repourls = repourls,
                                 version = datestamp,
                                 groups = grouplist,
                                 packages = pkglist)

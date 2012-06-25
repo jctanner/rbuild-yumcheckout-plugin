@@ -31,7 +31,14 @@ class YumCheckoutCommand(command.BaseCommand):
     paramHelp = '[<options>] --yumurl=<yumrepourl>'
 
     commands = ['yumcheckout']
-    docs = {'factory' : "choose the default factory for recipes"}
+    docs = {'yumurl' : "the http url for a yum repository", 
+            'factory' : "choose the default factory for recipes",
+            'dryrun' : "pretend to make checkouts",
+            'groups' : "checkout and create group recipes",
+            'packages' : "checkout and create the latest NEVRA packages",
+            'upstreamurl' : "not yet implemented",
+            'templatedir' : "not yet implemented"}
+    
 
     def addLocalParameters(self, argDef):
         argDef['yumurl'] = command.MULT_PARAM
@@ -40,6 +47,7 @@ class YumCheckoutCommand(command.BaseCommand):
         argDef['upstreamlabel'] = command.OPT_PARAM
         argDef['packages'] = command.NO_PARAM
         argDef['groups'] = command.NO_PARAM
+        argDef['dryrun'] = command.NO_PARAM
 
 
     def runCommand(self, handle, argSet, args):
@@ -97,8 +105,11 @@ class YumCheckoutCommand(command.BaseCommand):
 
             for key in sorted(outputrecipes.keys()):
                 print "INFO: checking out package %s" % key
-                handle.YumCheckout.checkoutPackageDefault(key, template=None, factory=factory)
-                handle.YumCheckout.writeRecipe(outputrecipes[key],  key + ".recipe", key)
+                #import epdb; epdb.st()
+                #if (argSet.get('dryrun', False)):
+                if (not argSet.has_key('dryrun')):
+                    handle.YumCheckout.checkoutPackageDefault(key, template=None, factory=factory)
+                    handle.YumCheckout.writeRecipe(outputrecipes[key],  key + ".recipe", key)
 
         #if (argSet['groups']):
         if (argSet.get('groups', False)):
@@ -106,8 +117,11 @@ class YumCheckoutCommand(command.BaseCommand):
             #epdb.st()
             for key in sorted(outputrecipes.recipes.keys()):
                 print "INFO: checking out %s" % key
-                handle.YumCheckout.checkoutPackageDefault(key, template=None, factory=factory)
-                handle.YumCheckout.writeRecipe(outputrecipes.recipes[key],  key + ".recipe", key)
+                #import epdb; epdb.st()
+                #if (argSet.get('dryrun', False)):
+                if (not argSet.has_key('dryrun')):
+                    handle.YumCheckout.checkoutPackageDefault(key, template=None, factory=factory)
+                    handle.YumCheckout.writeRecipe(outputrecipes.recipes[key],  key + ".recipe", key)
 
 
 class YumCheckout(pluginapi.Plugin):

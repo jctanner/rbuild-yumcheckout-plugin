@@ -1,7 +1,8 @@
 \#group-rpms recipe template
 class GroupRpms(GroupSetRecipe):
 
-    \# $repourl
+    \#parsed repo urls
+$repourls
 
     name = 'group-rpms'
     version = '$version'
