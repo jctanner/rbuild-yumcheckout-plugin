@@ -21,6 +21,8 @@ from rbuild_plugins.yumcheckout.conaryhelpers import labelquery
 
 import epdb
 
+#test
+
 class YumCheckoutCommand(command.BaseCommand):
     
     #epdb.st()
