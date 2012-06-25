@@ -73,10 +73,19 @@ class GroupRecipes(object):
         
         repourls = []
         for repo in self.yumrepos.repos:
-            repourls.append('    ' + '#' + repo.url + '\n')        
+            repourls.append('    ' + '#' + repo.url + '\n')
+        
+        #import epdb; epdb.st()
+        
+        grouplist = []
         
         pkglist = []
-        grouplist = []
+        for pkg in sorted(self.yumrepos.latestpackages):
+            #prefer upstream
+            if (pkg.upstreamtrove != ''):
+                pkglist += "\t\t\'%s\',\n" % pkg.upstreamtrove
+            elif (pkg.localtrove != ''):
+                pkglist += "\t\t\'%s\',\n" % pkg.localtrove
         
         templ = self.loader.load('group-yumrepos', cls=TextTemplate)
         recipe = templ.generate(name = name, 
