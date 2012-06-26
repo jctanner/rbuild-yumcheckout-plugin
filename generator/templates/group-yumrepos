@@ -1,5 +1,5 @@
-\#group-rpms recipe template
-class GroupRpms(GroupSetRecipe):
+\#group-yumrepos recipe template
+class GroupYumrepos(GroupSetRecipe):
 
     \#parsed repo urls
 $repourls
@@ -10,6 +10,7 @@ $repourls
     buildRequires = []
 
     def setup(r):
+
         Use.xen.setPlatform(False)
         Use.domU.setPlatform(False)
         Use.dom0.setPlatform(False)
@@ -17,21 +18,31 @@ $repourls
 
         r.dumpAll()
 
+        \#setup the search objects
         localrepo = r.Repository(r.cfg.buildLabel, r.flavor)
         upstream = r.Repository('rhel.rpath.com@rpath:rhel-5-server', r.flavor)
         searchObj = r.SearchPath(localrepo, upstream)
 
+        \#add all individual packages to the primary group
         packages = r.yumPackages()
+        mastergroup = searchObj.find(*packages)
 
-        pkgtrvset = searchObj.find(*packages)
-        pkgtrvset.dump()
+        \#add all of the groups from comps.xml
+        repoGroups = r.yumGroups()
+        for key in repoGroups.keys():
+            packages = repoGroups[key]
+            pkgtrvset = searchObj.find(*packages)
+            pkgtrvset.dump()
+            mastergroup += pkgtrvset.createGroup(key)
 
-        r.Group(pkgtrvset, checkPathConflicts=False)
+        r.Group(mastergroup, checkPathConflicts=False)
+
         
     def yumGroups(r):
         groups = {
 $groups
-        }        
+        }
+        return groups        
 
     def yumPackages(r):
         packages = [

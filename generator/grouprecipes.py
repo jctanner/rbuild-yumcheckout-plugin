@@ -98,6 +98,7 @@ class GroupRecipes(object):
             elif (pkg.localtrove != ''):
                 pkglist += "\t\t\'%s\',\n" % pkg.localtrove
         
+        #import epdb; epdb.st()
         templ = self.loader.load('group-yumrepos', cls=TextTemplate)
         recipe = templ.generate(name = name, 
                                 className=classname, 
