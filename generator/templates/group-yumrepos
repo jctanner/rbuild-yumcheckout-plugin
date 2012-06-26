@@ -27,9 +27,15 @@ $repourls
         pkgtrvset.dump()
 
         r.Group(pkgtrvset, checkPathConflicts=False)
+        
+    def yumGroups(r):
+        groups = {
+$groups
+        }        
 
     def yumPackages(r):
-        packages = [$packages
+        packages = [
+$packages
         ]
         return packages
 

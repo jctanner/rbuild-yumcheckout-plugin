@@ -77,7 +77,18 @@ class GroupRecipes(object):
         
         #import epdb; epdb.st()
         
-        grouplist = []
+        grouplist = ""
+        grouphash = {}
+        for g in self.yumrepos.uniquegroups:
+            grouphash[g.id] = g.packages
+        keys = sorted(grouphash.keys())
+        
+        for key in keys:
+            grouplist += "            \'%s\':[" % ("group-" + key)
+            for p in grouphash[key]:
+                grouplist += "\'%s\', " % p
+            grouplist += "],\n"
+                
         
         pkglist = []
         for pkg in sorted(self.yumrepos.latestpackages):
