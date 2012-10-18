@@ -23,6 +23,6 @@ Options:
 ```
 
 Example
--———————————
+-------------------------
 
 rbuild yumcheckout --yumurl=http://172.16.176.13/repos/test --packages
